@@ -1,0 +1,28 @@
+---
+- name: ansible-modules
+  hosts: all
+  gather_facts: false
+  vars:
+    jsondata: "{{ lookup('file','ansible-6.4.0.json') | from_json }}"
+  tasks:
+    - name: Display all JSON
+      ansible.builtin.debug:
+        var: jsondata
+      tags: [ never, debug ]
+
+    - name: Print out flatten JSON
+      debug:
+        msg:  "{{ lookup('ansible.utils.to_paths', jsondata.all.module) }}"
+      tags: [ never, debug ]
+
+    - name: Display first level
+      ansible.builtin.debug:
+        msg: "{{ jsondata.all | list }}"
+      tags: [ never, debug ]
+
+    - name: Search for modules
+      ansible.builtin.debug:
+        msg: '{{ item[0] }} -> {{ item[1] }}.{{ item[0] }}'
+      loop: "{{ jsondata.all.module | community.general.json_query(jmesquery) }}"
+      vars:
+        jmesquery: '*.doc.[module,collection]'

@@ -1,0 +1,22 @@
+---
+- name: ansible-modules
+  hosts: all
+  gather_facts: false
+  vars:
+    input_compressed: 'ansible-6.4.0.json.zip'
+  tasks:
+    - name: extract compressed JSON
+      ansible.builtin.unarchive:
+        src: "{{ input_compressed }}"
+        dest: "{{ playbook_dir }}"
+
+    - name: load JSON
+      ansible.builtin.set_fact:
+        jsondata: "{{ lookup('file','ansible-6.4.0.json') | from_json }}"
+
+    - name: Search for modules
+      ansible.builtin.debug:
+        var: item
+      loop: "{{ jsondata.all.module | community.general.json_query(jmesquery) }}"
+      vars:
+        jmesquery: '*.doc.[module,collection]'
