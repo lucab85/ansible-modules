@@ -12,7 +12,7 @@
 
     - name: load JSON
       ansible.builtin.set_fact:
-        jsondata: "{{ lookup('file','ansible-6.4.0.json') | from_json }}"
+        jsondata: "{{ lookup('file', 'ansible-6.4.0.json') | from_json }}"
 
     - name: Search for modules
       ansible.builtin.debug:
